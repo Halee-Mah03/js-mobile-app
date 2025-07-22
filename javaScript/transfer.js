@@ -40,7 +40,21 @@ document.addEventListener("DOMContentLoaded", () => {
     balance -= amount;
     localStorage.setItem("balance", balance.toFixed(2));
 
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    currentUser.balance = balance;
+    currentUser.transactions = existing;
+
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+    users = users.map((user) =>
+      user.email === currentUser.email ? currentUser : user
+    );
+    localStorage.setItem("users", JSON.stringify(users));
+
     transferForm.reset();
     alert("Transfer successful!");
+    window.location.href = "dashboard.html";
   });
 });
