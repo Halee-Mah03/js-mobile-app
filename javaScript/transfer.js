@@ -46,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser.balance = balance;
     currentUser.transactions = existing;
 
+    // Update both keys for compatibility
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    localStorage.setItem("loggedInUser", JSON.stringify(currentUser));
 
     users = users.map((user) =>
       user.email === currentUser.email ? currentUser : user

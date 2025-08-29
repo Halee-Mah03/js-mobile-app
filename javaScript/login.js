@@ -1,27 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const togglePassword = document.getElementById("togglePassword");
-  const passwordInput = document.querySelector("input[name='password']");
+  const loginContainer = document.getElementById("loginContainer");
+  const registerLink = document.getElementById("registerLink");
+  const form = document.querySelector("form");
+  const passwordInput = document.getElementById("password");
+  const emailInput = document.getElementById("email");
+  const togglePasswordBtn = document.querySelector(
+    'button[title="Toggle Password Visibility"]'
+  );
   const eyeIcon = document.getElementById("eyeIcon");
 
-  togglePassword.addEventListener("click", () => {
+  setTimeout(() => {
+    loginContainer.classList.add("show");
+  }, 100);
+
+  togglePasswordBtn.addEventListener("click", () => {
     const type =
       passwordInput.getAttribute("type") === "password" ? "text" : "password";
     passwordInput.setAttribute("type", type);
 
     if (type === "text") {
-      eyeIcon.setAttribute("fill", "#000");
-      eyeIcon.setAttribute("stroke", "#000");
+      eyeIcon.setAttribute("stroke", "#00FF00");
     } else {
-      eyeIcon.setAttribute("fill", "#bbb");
       eyeIcon.setAttribute("stroke", "#bbb");
     }
   });
 
-  document.querySelector("form").addEventListener("submit", function (e) {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const email = document.querySelector("input[name='email']").value.trim();
+    const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
@@ -30,11 +43,26 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (matchedUser) {
-      localStorage.setItem("currentUser", JSON.stringify(matchedUser));
-      alert("Login successful!");
-      window.location.href = "dashboard.html";
+      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
+
+      loginContainer.style.transform = "translateX(-100vw)";
+      loginContainer.style.opacity = "0";
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 500);
     } else {
       alert("Invalid email or password.");
     }
+  });
+
+  registerLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    loginContainer.style.transform = "translateX(-100vw)";
+    loginContainer.style.opacity = "0";
+
+    setTimeout(() => {
+      window.location.href = "signup.html";
+    }, 600);
   });
 });
