@@ -15,10 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const description = document.getElementById("description").value;
 
-    let balance = parseFloat(localStorage.getItem("balance"));
-    if (isNaN(balance)) {
-      balance = 100000;
+    let loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!loggedInUser) {
+      alert("User not logged in.");
+      return;
     }
+
+    let balance = parseFloat(loggedInUser.balance) || 0;
 
     if (amount > balance) {
       alert("Insufficient balance.");
@@ -33,27 +36,20 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "debit",
     };
 
-    const existing = JSON.parse(localStorage.getItem("transactions")) || [];
-    existing.unshift(newTransaction);
-    localStorage.setItem("transactions", JSON.stringify(existing));
+    loggedInUser.transactions = Array.isArray(loggedInUser.transactions)
+      ? [newTransaction, ...loggedInUser.transactions]
+      : [newTransaction];
 
-    balance -= amount;
-    localStorage.setItem("balance", balance.toFixed(2));
+    loggedInUser.balance = balance - amount;
 
-    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    currentUser.balance = balance;
-    currentUser.transactions = existing;
-
-    // Update both keys for compatibility
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
-    localStorage.setItem("loggedInUser", JSON.stringify(currentUser));
-
     users = users.map((user) =>
-      user.email === currentUser.email ? currentUser : user
+      user.email === loggedInUser.email ? loggedInUser : user
     );
     localStorage.setItem("users", JSON.stringify(users));
+
+    localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+    localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
 
     transferForm.reset();
     alert("Transfer successful!");
